@@ -1,0 +1,29 @@
+{
+  "name": "react-reduxredux",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "body-parser": "^1.17.1",
+    "react-scripts": "0.9.4"
+  },
+  "dependencies": {
+    "axios": "^0.15.3",
+    "node-sass": "^4.11.0",
+    "react": "^16.3.0",
+    "react-confirm-alert": "^2.1.0",
+    "react-dom": "^16.3.0",
+    "react-redux": "^6.0.1",
+    "redux": "^3.5.2",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-logger": "^2.6.1",
+    "redux-promise": "^0.5.3",
+    "redux-thunk": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:5000"
+}
