@@ -1,5 +1,5 @@
 {
-  "name": "react-reduxredux",
+  "name": "react-redux-redux",
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
@@ -21,9 +21,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "server": "nodemon index.js --ignore client",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:5000"
+  "proxy": "http://localhost:3000"
 }

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use Http\Client\Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -14,8 +16,12 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
-        return response()->json($posts);
+        try {
+            $posts = Post::all();
+            return response()->json($posts);
+        } catch (Exception $e) {
+            Log::info('PostController index', [$e->getMessage()]);
+        }
     }
 
     /**
@@ -31,20 +37,24 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $item = new Post($request->all());
-        $item->save();
-        return response()->json($item);
+        try {
+            $item = new Post($request->all());
+            $item->save();
+            return response()->json($item);
+        } catch (Exception $e) {
+            Log::info('PostController store', [$e->getMessage()]);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Post  $Post
+     * @param  \App\Post $Post
      * @return \Illuminate\Http\Response
      */
     public function show(Post $Post)
@@ -55,7 +65,7 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Post  $Post
+     * @param  \App\Post $Post
      * @return \Illuminate\Http\Response
      */
     public function edit(Post $Post)
@@ -66,27 +76,36 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Post  $Post
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Post $Post
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $item = Post::where('id', $id)->first();
-        $item->fill($request->all());
-        return response()->json($item);
+        try {
+            $item = Post::where('id', $id)->first();
+            $item->fill($request->all());
+            $item->save();
+            return response()->json($item);
+        } catch (Exception $e) {
+            Log::info('PostController update', [$e->getMessage()]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Post  $Post
+     * @param  \App\Post $Post
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $post = Post::find($id);
-        $post->delete();
-        return response()->json($id);
+        try {
+            $post = Post::find($id);
+            $post->delete();
+            return response()->json($id);
+        } catch (Exception $e) {
+            Log::info('PostController destroy', [$e->getMessage()]);
+        }
     }
 }

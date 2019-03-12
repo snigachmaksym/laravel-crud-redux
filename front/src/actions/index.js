@@ -2,6 +2,11 @@ import { ADD_POST, DELETE_POST, FETCH_POST, EDIT_POST, UPDATE_POST } from  './ty
 import axios from 'axios';
 
 const apiUrl = 'http://127.0.0.1:8000/api/post';
+const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    withCredentials: true
+};
 
 export const createPost = ({ title, body }) => {
     return (dispatch) => {
@@ -29,7 +34,7 @@ export const createPostSuccess =  data => {
 
 export const updatePost = ({id, title, body }) => {
     return (dispatch) => {
-        return axios.put(`${apiUrl}/${id}`, {id, title, body})
+        return axios.put(`${apiUrl}/${id}`, {title, body}, {headers: headers})
             .then(response => {
                 dispatch(updatePostSuccess(response.data))
             })
@@ -61,7 +66,7 @@ export const deletePostSuccess = id => {
 
 export const deletePost = id => {
     return (dispatch) => {
-        return axios.delete(`${apiUrl}/${id}`)
+        return axios.delete(`${apiUrl}/${id}`, {headers: headers})
             .then(response => {
                 dispatch(deletePostSuccess(response.data))
             })
@@ -93,7 +98,7 @@ export const fetchPosts = posts => {
 
 export const fetchAllPosts = () => {
     return (dispatch) => {
-        return axios.get(apiUrl)
+        return axios.get(apiUrl, {headers: headers})
             .then(response => {
                 dispatch(fetchPosts(response.data))
             })
