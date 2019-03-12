@@ -18,6 +18,8 @@ update the .env file along with database connection
 $ composer install && composer update
 $ php artisan vendor:publish --provider="Barryvdh\Cors\ServiceProvider"
 $ php artisan migrate 
+$ php artisan jwt:secret
+$ php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
 
 ```
 
