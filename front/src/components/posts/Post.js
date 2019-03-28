@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { deletePost, editPost } from '../actions';
-import View from '../components/View';
+import { deletePost, editPost } from '../../actions/posts';
+import View from './View';
 
 const mapDispatchToProps = dispatch => {
     return {

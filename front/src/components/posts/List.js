@@ -1,14 +1,8 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import Post from '../containers/Post';
-import {fetchAllPosts} from '../actions';
-
+import Post from './Post';
 
 class List extends Component {
-
-    componentDidMount() {
-        this.props.fetchAllPosts();
-    }
 
     render(){
         return (
@@ -22,10 +16,11 @@ class List extends Component {
         );
     }
 }
-export default connect(mapStateToProps, {fetchAllPosts})(List)
+export default connect(mapStateToProps)(List)
 
 function mapStateToProps(state) {
     return {
-        posts: state.posts
+        posts: state.posts,
+        userId: state.auth.userData.id
     };
 }

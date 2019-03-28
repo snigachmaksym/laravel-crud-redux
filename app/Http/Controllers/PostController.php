@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidationPosts;
 use App\Post;
 use Http\Client\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 
 class PostController extends Controller
 {
@@ -16,11 +19,15 @@ class PostController extends Controller
      */
     public function index()
     {
+       //
+    }
+
+    public function getAllPostByUserId(Request $request){
         try {
-            $posts = Post::all();
+            $posts = Post::whereUserId($request->input('userId'))->get();
             return response()->json($posts);
         } catch (Exception $e) {
-            Log::info('PostController index', [$e->getMessage()]);
+            Log::info('PostController getAllPostByUserId', [$e->getMessage()]);
         }
     }
 
@@ -40,7 +47,7 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ValidationPosts $request)
     {
         try {
             $item = new Post($request->all());
@@ -80,7 +87,7 @@ class PostController extends Controller
      * @param  \App\Post $Post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ValidationPosts $request, $id)
     {
         try {
             $item = Post::where('id', $id)->first();

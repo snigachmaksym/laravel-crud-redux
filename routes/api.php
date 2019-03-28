@@ -15,14 +15,12 @@ use Illuminate\Http\Request;
 
 Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@login');
-Route::get('post', 'PostController@index');
+Route::get('userdata', 'UserController@getAuthenticatedUser');
 
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::get('post', 'PostController@index');
 
-
+Route::post('posts', 'PostController@getAllPostByUserId');
 Route::post('post', 'PostController@store');
-Route::put('post/{id}', 'PostController@update');
+Route::post('post/{id}', 'PostController@update');
 Route::delete('post/{id}', 'PostController@destroy');

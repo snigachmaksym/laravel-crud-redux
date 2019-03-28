@@ -1,44 +1,51 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import classnames from 'classnames';
+
 class Form extends Component {
 
     state = {
-        id: '',
+        id: null,
         title: '',
         body: '',
-        alert: false
+        user_id: null,
+        errors: {}
     };
 
     componentDidUpdate(prevProps) {
-        if(this.props.editPost !== prevProps.editPost){
+
+        if (this.props.editPost !== prevProps.editPost) {
             this.setState(this.props.editPost);
+        }
+
+    }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.errors) {
+            this.setState({
+                errors: nextProps.errors
+            });
+        }
+        if(nextProps.userId) {
+            this.setState({
+                user_id: nextProps.userId
+            });
         }
     }
 
     handleInputChange = e => {
-        if(e.target.value === ''){
+        if (e.target.value === '') {
             this.setState({id: null});
         }
         this.setState({
             [e.target.name]: e.target.value
         });
-        this.showAlertText();
     };
 
-    onCreate = e => {
-        this.showAlertText();
+    onUpdatePostsList = e => {
         e.preventDefault();
-        if (this.state.title.trim() && this.state.body.trim()) {
-            this.props.onAddPost(this.state);
-            this.handleReset();
-        }
-    };
-    onUpdate = e => {
-        this.showAlertText();
-        e.preventDefault();
-        if (this.state.title.trim() && this.state.body.trim()) {
-            this.props.onUpdatePost(this.state);
-            this.handleReset();
-        }
+        this.props.onUpdatePostsList(this.state);
+
     };
 
     handleReset = () => {
@@ -46,52 +53,52 @@ class Form extends Component {
             id: null,
             title: '',
             body: '',
-            alert: false
         });
-        this.showAlertText();
     };
     showEditButton = () => {
         return this.state.id && (this.state.title || this.state.body) ? true : false
     };
 
-    showAlertText = () => {
-        return (this.state.title && this.state.body) ? this.setState({alert: false}) : this.setState({alert: true})
-    };
-
     render() {
-        const alertText = <div className="text-danger">Title and body should not be empty!</div>;
-              return (
+        const {errors} = this.state;
+        return (
             <div>
                 <form>
                     <div className="form-group">
                         <input
                             type="text"
                             placeholder="Title"
-                            className="form-control"
+                            className={classnames('form-control form-control-lg', {
+                                'is-invalid': errors.title
+                            })}
                             name="title"
                             onChange={ this.handleInputChange }
                             value={ this.state.title }
                         />
+                            {errors.title && (<div className="invalid-feedback">{errors.title[0]}</div>)}
                     </div>
                     <div className="form-group">
                         <textarea
                             cols="19"
                             rows="8"
                             placeholder="Body"
-                            className="form-control"
+                            className={classnames('form-control form-control-lg', {
+                                'is-invalid': errors.body
+                            })}
                             name="body"
                             onChange={ this.handleInputChange }
                             value={ this.state.body }>
                         </textarea>
-                        {this.state.alert ? alertText : null}
+                        {errors.body && (<div className="invalid-feedback">{errors.body[0]}</div>)}
                     </div>
                     <div className="form-group">
-                        <button type="button" className="btn btn-primary" onClick={ this.onCreate }>Create new post</button>
                         {this.showEditButton()
-                        ?
-                        <button type="button" className="btn btn-success" onClick={ this.onUpdate }>Update post with id {this.state.id}</button>
-                        :
-                        null
+                            ?
+                            <button type="button" className="btn btn-success" onClick={ this.onUpdatePostsList }>Update post with
+                                id {this.state.id}</button>
+                            :
+                            <button type="button" className="btn btn-primary" onClick={ this.onUpdatePostsList }>Create new post
+                            </button>
                         }
 
                         <button type="button" className="btn btn-warning" onClick={ this.handleReset }>
@@ -104,5 +111,15 @@ class Form extends Component {
     }
 }
 
-export default Form
+Form.propTypes = {
+    errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+    errors: state.errors,
+    editPost: state.editPost,
+    userId: state.auth.userData.id
+});
+
+export  default connect(mapStateToProps)(Form)
 
