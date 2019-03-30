@@ -21,6 +21,5 @@ export default connect(mapStateToProps)(List)
 function mapStateToProps(state) {
     return {
         posts: state.posts,
-        userId: state.auth.userData.id
     };
 }

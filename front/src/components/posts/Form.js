@@ -53,6 +53,7 @@ class Form extends Component {
             id: null,
             title: '',
             body: '',
+            errors: {}
         });
     };
     showEditButton = () => {
