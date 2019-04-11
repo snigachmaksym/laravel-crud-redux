@@ -7,6 +7,11 @@ import classnames from 'classnames';
 
 class Register extends Component {
 
+    static propTypes = {
+        registerUser: PropTypes.func.isRequired,
+        auth: PropTypes.object.isRequired
+    };
+
     constructor() {
         super();
         this.state = {
@@ -69,7 +74,7 @@ class Register extends Component {
                             onChange={ this.handleInputChange }
                             value={ this.state.name }
                         />
-                        {errors.name && (<div className="invalid-feedback">{errors.name}</div>)}
+                        {errors.name && (<div className="invalid-feedback">{errors.name[0]}</div>)}
                     </div>
                     <div className="form-group">
                         <input
@@ -82,7 +87,7 @@ class Register extends Component {
                             onChange={ this.handleInputChange }
                             value={ this.state.email }
                         />
-                        {errors.email && (<div className="invalid-feedback">{errors.email}</div>)}
+                        {errors.email && (<div className="invalid-feedback">{errors.email[0]}</div>)}
                     </div>
                     <div className="form-group">
                         <input
@@ -95,7 +100,7 @@ class Register extends Component {
                             onChange={ this.handleInputChange }
                             value={ this.state.password }
                         />
-                        {errors.password && (<div className="invalid-feedback">{errors.password}</div>)}
+                        {errors.password && (<div className="invalid-feedback">{errors.password[0]}</div>)}
                     </div>
                     <div className="form-group">
                         <input
@@ -108,7 +113,7 @@ class Register extends Component {
                             onChange={ this.handleInputChange }
                             value={ this.state.password_confirmation }
                         />
-                        {errors.password_confirmation && (<div className="invalid-feedback">{errors.password_confirmation}</div>)}
+                        {errors.password_confirmation && (<div className="invalid-feedback">{errors.password_confirmation[0]}</div>)}
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary">
@@ -120,11 +125,6 @@ class Register extends Component {
         )
     }
 }
-
-Register.propTypes = {
-    registerUser: PropTypes.func.isRequired,
-    auth: PropTypes.object.isRequired
-};
 
 const mapStateToProps = state => ({
     auth: state.auth,

@@ -2,29 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidationLoginRequest;
+use App\Http\Requests\ValidationRegisterRequest;
 use App\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
 {
-    public function register(Request $request)
+    public function register(ValidationRegisterRequest $request)
     {
-        $validator = Validator::make($request->json()->all(),[
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'password_confirmation' => 'required',
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
-        }
         $user = User::create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
@@ -36,29 +25,21 @@ class UserController extends Controller
         return response()->json(compact('user','token'),201);
     }
 
-    public function login(Request $request)
+    public function login(ValidationLoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255',
-            'password'=> 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
         $credentials = $request->only('email', 'password');
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Invalid credentials'], 401);
+                return response()->json(['errors' => ['credentials' =>'Invalid credentials']], 401);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json(['errors' => ['could_not_create_token']], 500);
         }
         return response()->json(compact('token'));
     }
     public function getAuthenticatedUser()
     {
         try {
-            Log::info('tpken');
             if (! $user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }

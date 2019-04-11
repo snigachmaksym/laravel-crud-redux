@@ -6,6 +6,12 @@ import classnames from 'classnames';
 
 class Login extends Component {
 
+    static propTypes = {
+        loginUser: PropTypes.func.isRequired,
+        auth: PropTypes.object.isRequired,
+        errors: PropTypes.object.isRequired
+    };
+
     constructor() {
         super();
         this.state = {
@@ -49,6 +55,7 @@ class Login extends Component {
 
     render() {
         const {errors} = this.state;
+        console.log(errors);
         return(
             <div className="container" style={{ marginTop: '50px', width: '700px'}}>
                 <h2 style={{marginBottom: '40px'}}>Login</h2>
@@ -64,7 +71,7 @@ class Login extends Component {
                             onChange={ this.handleInputChange }
                             value={ this.state.email }
                         />
-                        {errors.email && (<div className="invalid-feedback">{errors.email}</div>)}
+                        {errors.email && (<div className="invalid-feedback">{errors.email[0]}</div>)}
                     </div>
                     <div className="form-group">
                         <input
@@ -77,8 +84,8 @@ class Login extends Component {
                             onChange={ this.handleInputChange }
                             value={ this.state.password }
                         />
-                        {errors.password && (<div className="invalid-feedback">{errors.password}</div>)}
-                        {errors.error ? <div className="text-danger">{errors.error}</div> : null}
+                        {errors.password && (<div className="invalid-feedback">{errors.password[0]}</div>)}
+                        {errors.credentials ? <div className="text-danger">{errors.credentials}</div> : null}
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary">
@@ -90,12 +97,6 @@ class Login extends Component {
         )
     }
 }
-
-Login.propTypes = {
-    loginUser: PropTypes.func.isRequired,
-    auth: PropTypes.object.isRequired,
-    errors: PropTypes.object.isRequired
-};
 
 const mapStateToProps = (state) => ({
     auth: state.auth,

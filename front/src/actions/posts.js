@@ -98,9 +98,9 @@ export const fetchPosts = posts => {
     }
 };
 
-export const fetchAllPosts = (userId) => {
+export const fetchAllPosts = (user_id) => {
     return (dispatch) => {
-        return axios.post('/api/posts/', {userId}, {headers: headers})
+        return axios.post('/api/posts/', {user_id}, {headers: headers})
             .then(response => {
                 dispatch(fetchPosts(response.data))
             })

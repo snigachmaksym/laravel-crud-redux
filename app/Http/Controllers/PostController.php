@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ValidationPosts;
+use App\Http\Requests\ValidationPostsRequest;
 use App\Post;
+use App\User;
 use Http\Client\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 
 class PostController extends Controller
@@ -24,7 +24,8 @@ class PostController extends Controller
 
     public function getAllPostByUserId(Request $request){
         try {
-            $posts = Post::whereUserId($request->input('userId'))->get();
+            $userId = $request->input('user_id');
+            $posts = User::find($userId)->posts()->get();
             return response()->json($posts);
         } catch (Exception $e) {
             Log::info('PostController getAllPostByUserId', [$e->getMessage()]);
@@ -47,12 +48,12 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ValidationPosts $request)
+    public function store(ValidationPostsRequest $request)
     {
         try {
-            $item = new Post($request->all());
-            $item->save();
-            return response()->json($item);
+            $userId = $request->input('user_id');
+            $post = User::find($userId)->posts()->create($request->all());
+            return response()->json($post);
         } catch (Exception $e) {
             Log::info('PostController store', [$e->getMessage()]);
         }
@@ -87,13 +88,12 @@ class PostController extends Controller
      * @param  \App\Post $Post
      * @return \Illuminate\Http\Response
      */
-    public function update(ValidationPosts $request, $id)
+    public function update(ValidationPostsRequest $request)
     {
         try {
-            $item = Post::where('id', $id)->first();
-            $item->fill($request->all());
-            $item->save();
-            return response()->json($item);
+            $post = Post::find($request->input('id'));
+            $post->update($request->all());
+            return response()->json($post);
         } catch (Exception $e) {
             Log::info('PostController update', [$e->getMessage()]);
         }
