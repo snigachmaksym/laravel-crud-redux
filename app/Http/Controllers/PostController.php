@@ -22,9 +22,12 @@ class PostController extends Controller
        //
     }
 
-    public function getAllPostByUserId(Request $request){
+    /**
+     *  @param  int $userId
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllPostByUserId($userId){
         try {
-            $userId = $request->input('user_id');
             $posts = User::find($userId)->posts()->get();
             return response()->json($posts);
         } catch (Exception $e) {
@@ -45,7 +48,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Http\Requests\ValidationPostsRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(ValidationPostsRequest $request)
@@ -84,7 +87,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Http\Requests\ValidationPostsRequest $request
      * @param  \App\Post $Post
      * @return \Illuminate\Http\Response
      */
@@ -102,14 +105,13 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Post $Post
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         try {
-            $post = Post::find($id);
-            $post->delete();
+            Post::find($id)->delete();
             return response()->json($id);
         } catch (Exception $e) {
             Log::info('PostController destroy', [$e->getMessage()]);

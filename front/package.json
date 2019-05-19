@@ -21,6 +21,10 @@
     "react-scripts": "1.1.4",
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.8",
+    "redux-logger": "^3.0.6",
+    "redux-saga": "^1.0.2",
+    "redux-saga-requests": "^0.24.0",
+    "redux-saga-requests-axios": "^0.7.6",
     "redux-thunk": "^2.1.0"
   },
   "scripts": {

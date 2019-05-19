@@ -1,8 +1,14 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import Post from './Post';
+import PropTypes from 'prop-types';
 
 class List extends Component {
+
+    static propTypes = {
+        posts: PropTypes.array,
+        userId: PropTypes.number
+    };
 
     render(){
         return (
@@ -20,6 +26,7 @@ export default connect(mapStateToProps)(List)
 
 function mapStateToProps(state) {
     return {
-        posts: state.posts,
+        posts: state.auth.posts,
+        userId: state.auth.user.id
     };
 }

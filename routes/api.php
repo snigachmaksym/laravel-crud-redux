@@ -18,7 +18,7 @@ Route::post('login', 'UserController@login');
 
 Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('userdata', 'UserController@getAuthenticatedUser');
-    Route::post('posts', 'PostController@getAllPostByUserId');
+    Route::get('posts/{id}', 'PostController@getAllPostByUserId');
     Route::post('post', 'PostController@store');
     Route::post('post/{id}', 'PostController@update');
     Route::delete('post/{id}', 'PostController@destroy');

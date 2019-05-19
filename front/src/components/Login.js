@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { loginUser } from '../actions/authentication';
+import {connect} from 'react-redux';
+import {login} from '../store/auth/actions';
 import classnames from 'classnames';
 
 class Login extends Component {
 
     static propTypes = {
-        loginUser: PropTypes.func.isRequired,
+        login: PropTypes.func.isRequired,
         auth: PropTypes.object.isRequired,
-        errors: PropTypes.object.isRequired
+        errors: PropTypes.object
     };
 
     constructor() {
@@ -33,32 +33,31 @@ class Login extends Component {
             email: this.state.email,
             password: this.state.password,
         };
-        this.props.loginUser(user);
+        this.props.login(user);
     };
 
     componentDidMount() {
-        if(this.props.auth.isAuthenticated) {
+        if (this.props.auth.isAuthenticated) {
             this.props.history.push('/');
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.auth.isAuthenticated) {
+        if (nextProps.auth.isAuthenticated) {
             this.props.history.push('/')
         }
-        if(nextProps.errors) {
+        if (nextProps.auth.exception.errors) {
             this.setState({
-                errors: nextProps.errors
+                errors: nextProps.auth.exception.errors
             });
         }
     }
 
     render() {
         const {errors} = this.state;
-        console.log(errors);
-        return(
-            <div className="container" style={{ marginTop: '50px', width: '700px'}}>
-                <h2 style={{marginBottom: '40px'}}>Login</h2>
+        return (
+            <div className="container mt-5 w-75">
+                <h2 className="mb-4"> Login</h2>
                 <form onSubmit={ this.handleSubmit }>
                     <div className="form-group">
                         <input
@@ -103,4 +102,4 @@ const mapStateToProps = (state) => ({
     errors: state.errors
 });
 
-export  default connect(mapStateToProps, { loginUser })(Login)
+export  default connect(mapStateToProps, {login})(Login)

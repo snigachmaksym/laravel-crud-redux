@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { registerUser } from '../actions/authentication';
+import { register } from '../store/auth/actions';
 import classnames from 'classnames';
 
 class Register extends Component {
 
     static propTypes = {
-        registerUser: PropTypes.func.isRequired,
+        register: PropTypes.func.isRequired,
         auth: PropTypes.object.isRequired
     };
 
@@ -37,16 +37,16 @@ class Register extends Component {
             password: this.state.password,
             password_confirmation: this.state.password_confirmation
         };
-        this.props.registerUser(user, this.props.history);
+        this.props.register(user);
     };
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.auth.isAuthenticated) {
             this.props.history.push('/')
         }
-        if(nextProps.errors) {
+        if(nextProps.auth.exception.errors) {
             this.setState({
-                errors: nextProps.errors
+                errors: nextProps.auth.exception.errors
             });
         }
     }
@@ -60,8 +60,8 @@ class Register extends Component {
     render() {
         const { errors } = this.state;
         return(
-            <div className="container" style={{ marginTop: '50px', width: '700px'}}>
-                <h2 style={{marginBottom: '40px'}}>Registration</h2>
+            <div className="container mt-5 w-75">
+                <h2 className="mb-4">Registration</h2>
                 <form onSubmit={ this.handleSubmit }>
                     <div className="form-group">
                         <input
@@ -128,7 +128,8 @@ class Register extends Component {
 
 const mapStateToProps = state => ({
     auth: state.auth,
-    errors: state.errors
 });
-
-export default connect(mapStateToProps,{ registerUser })(withRouter(Register))
+const mapDispatchToProps = ({
+    register,
+});
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Register))

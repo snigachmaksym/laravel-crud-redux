@@ -7,6 +7,7 @@ use App\Http\Requests\ValidationRegisterRequest;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -28,6 +29,10 @@ class UserController extends Controller
     public function login(ValidationLoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
+        $user = User::where('email', '=', $credentials['email'])->with('posts')->first();
+        if (! $user) {
+            return response()->json(['errors' => ['credentials' =>'Email not found']], 401);
+        }
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['errors' => ['credentials' =>'Invalid credentials']], 401);
@@ -35,7 +40,7 @@ class UserController extends Controller
         } catch (JWTException $e) {
             return response()->json(['errors' => ['could_not_create_token']], 500);
         }
-        return response()->json(compact('token'));
+        return response()->json(compact('user', 'token'));
     }
     public function getAuthenticatedUser()
     {
@@ -57,7 +62,7 @@ class UserController extends Controller
             return response()->json(['token_absent'], $e->getStatusCode());
 
         }
-
-        return response()->json(compact('user'));
+        $posts = $user->posts()->get();
+        return response()->json(compact('user', 'posts'));
     }
 }

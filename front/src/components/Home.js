@@ -1,42 +1,60 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import NewPost from './posts/NewPost';
+import Form from './posts/Form';
 import List from './posts/List';
+import {axiosController} from '../utils/axiosController';
+import {fetchAuthUser} from '../store/auth/actions';
+import {Redirect} from 'react-router'
 
 class Home extends Component {
+
+    static propTypes = {
+        auth: PropTypes.object.isRequired
+    };
+
+    componentDidMount() {
+        var token = axiosController.isGetToken();
+        const {auth, fetchAuthUser} = this.props;
+        if (token && !auth.isAuthenticated) {
+            fetchAuthUser().catch(() => {
+                axiosController.deleteToken();
+                return <Redirect to="/login"/>
+            });
+        } else if (!token) {
+            return <Redirect to="/login"/>
+        }
+    }
+
     render() {
-        const {isAuthenticated, userData} = this.props.auth;
+        const {isAuthenticated, user} = this.props.auth;
         const guestView = (
             <h2>Hello, guest. Please login first ;-)</h2>
         );
         const authView = (
-            <div className="container">
-                <h2>Hello, {userData.name}.</h2>
+            <React.Fragment>
+                <h2>Hello, {user.name}.</h2>
                 <div className="row">
                     <div className="col-md-6">
-                        <NewPost />
+                        <Form />
                     </div>
                     <div className="col-md-6">
                         <List />
                     </div>
                 </div>
-            </div>
+            </React.Fragment>
         );
         return (
-            <div>
+            <div className="container">
                 {isAuthenticated ? authView : guestView}
             </div>
         );
     }
 }
 
-Home.propTypes = {
-    auth: PropTypes.object.isRequired
-};
 
 const mapStateToProps = (state) => ({
     auth: state.auth
 });
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps, {fetchAuthUser})(Home);

@@ -3,67 +3,74 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import classnames from 'classnames';
 
+import {onUpdatePostsList, clearForm} from '../../store/posts/actions';
+
 class Form extends Component {
 
-    state = {
-        id: null,
-        title: '',
-        body: '',
-        user_id: null,
-        errors: {}
+    static propTypes = {
+        posts: PropTypes.array,
+        errors: PropTypes.object,
+        editPost: PropTypes.object,
+        userId: PropTypes.number,
+        onUpdatePostsList: PropTypes.func,
+        clearForm: PropTypes.func
     };
+
+    constructor(props) {
+        super(props);
+        this.state = this.getInitialState();
+    }
 
     componentDidUpdate(prevProps) {
 
-        if (this.props.editPost !== prevProps.editPost) {
-            this.setState(this.props.editPost);
+        if ((this.props.editPost.title !== prevProps.editPost.title ||
+            this.props.editPost.body !== prevProps.editPost.body) &&
+            this.props.editPost.id !== prevProps.editPost.id) {
+            let post = this.state.post;
+            post = this.props.editPost;
+            this.setState({post});
+        }
+        if (this.props.posts.length !== prevProps.posts.length) {
+            this.setState(this.getInitialState());
         }
 
     }
-    componentWillReceiveProps(nextProps) {
-        if(nextProps.errors) {
-            this.setState({
-                errors: nextProps.errors
-            });
-        }
-        if(nextProps.userId) {
-            this.setState({
-                user_id: nextProps.userId
-            });
-        }
-    }
+
+    getInitialState = () => {
+        return {
+            post: {
+                id: null,
+                title: '',
+                body: '',
+            }
+        };
+    };
 
     handleInputChange = e => {
-        if (e.target.value === '') {
-            this.setState({id: null});
-        }
-        this.setState({
-            [e.target.name]: e.target.value
-        });
+        let post = this.state.post;
+        post[e.target.name] = e.target.value;
+        this.setState({post});
     };
 
     onUpdatePostsList = e => {
         e.preventDefault();
-        this.props.onUpdatePostsList(this.state);
-
+        let post = this.state.post;
+        post.user_id = this.props.userId;
+        this.props.onUpdatePostsList(post);
     };
 
     handleReset = () => {
-        this.setState({
-            id: null,
-            title: '',
-            body: '',
-            errors: {}
-        });
-    };
-    showEditButton = () => {
-        return this.state.id && (this.state.title || this.state.body) ? true : false
+        this.setState(this.getInitialState());
+        this.props.clearForm();
     };
 
+
     render() {
-        const {errors} = this.state;
+        const {post} = this.state;
+        const {errors} = this.props;
+        const buttonText = post.id ? 'Edit post' : 'Create post';
         return (
-            <div>
+            <React.Fragment>
                 <form>
                     <div className="form-group">
                         <input
@@ -73,10 +80,10 @@ class Form extends Component {
                                 'is-invalid': errors.title
                             })}
                             name="title"
-                            onChange={ this.handleInputChange }
-                            value={ this.state.title }
+                            onChange={ (e) => this.handleInputChange(e) }
+                            value={ post.title }
                         />
-                            {errors.title && (<div className="invalid-feedback">{errors.title[0]}</div>)}
+                        {errors.title && (<div className="invalid-feedback">{errors.title[0]}</div>)}
                     </div>
                     <div className="form-group">
                         <textarea
@@ -88,39 +95,33 @@ class Form extends Component {
                             })}
                             name="body"
                             onChange={ this.handleInputChange }
-                            value={ this.state.body }>
+                            value={ post.body }>
                         </textarea>
                         {errors.body && (<div className="invalid-feedback">{errors.body[0]}</div>)}
                     </div>
-                    <div className="form-group">
-                        {this.showEditButton()
-                            ?
-                            <button type="button" className="btn btn-success" onClick={ this.onUpdatePostsList }>Update post with
-                                id {this.state.id}</button>
-                            :
-                            <button type="button" className="btn btn-primary" onClick={ this.onUpdatePostsList }>Create new post
-                            </button>
-                        }
-
-                        <button type="button" className="btn btn-warning" onClick={ this.handleReset }>
-                            Reset
-                        </button>
+                    <div className="form-group d-flex flex-row justify-content-between">
+                        <button type="button" className="btn btn-success"
+                                onClick={ this.onUpdatePostsList }>{buttonText}</button>
+                        <button type="button" className="btn btn-warning" onClick={ this.handleReset }>Reset</button>
                     </div>
                 </form>
-            </div>
+            </React.Fragment>
         );
     }
 }
 
-Form.propTypes = {
-    errors: PropTypes.object.isRequired
-};
 
 const mapStateToProps = (state) => ({
-    errors: state.errors,
-    editPost: state.editPost,
-    userId: state.auth.userData.id
+    userId: state.auth.user.id,
+    editPost: state.auth.editPost,
+    errors: state.auth.exception.errors,
+    posts: state.auth.posts,
 });
 
-export  default connect(mapStateToProps)(Form)
+const mapDispatchToProps = dispatch => ({
+    onUpdatePostsList: post => dispatch(onUpdatePostsList(post)),
+    clearForm: () => dispatch(clearForm())
+});
+
+export  default connect(mapStateToProps, mapDispatchToProps)(Form)
 
